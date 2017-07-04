@@ -11,7 +11,7 @@ const create = obj => {
   })
 
   const messageId = new Date().toISOString() + Math.random()
-  
+
   const newEvent = Object.assign({
     _promise: promise,
     _resolve: resolve,
@@ -59,7 +59,7 @@ const validateQuickReply = (quick_reply) => {
 
 const validateTyping = (typing) => {
   if (!_.isBoolean(typing) && !_.isNumber(typing)) {
-    throw new Error('Expected typing to be a boolean of a number')
+    throw new Error('Expected typing to be a boolean or a number')
   }
 }
 
@@ -131,7 +131,7 @@ const createText = (userId, text, options) => {
 const createAttachment = (userId, type, url, options) => {
   validateUserId(userId)
   validateAttachmentType(type)
-  
+
   if ( _.isNull(url) && !(options && options.attachmentId) ) {
     throw new Error('If URL is null, you must pass an attachment_id on options object')
   }
@@ -172,6 +172,11 @@ const createTemplate = (userId, payload, options) => {
   validateUserId(userId)
   validateTemplatePayload(payload)
 
+  if (options && options.quick_replies) {
+    console.log('hello')
+    validateQuickReplies(options.quick_replies)
+  }
+
   if (options && options.typing) {
     validateTyping(options.typing)
   }
@@ -184,6 +189,7 @@ const createTemplate = (userId, payload, options) => {
       to: userId,
       payload: payload,
       typing: (options && options.typing),
+      quick_replies: options && options.quick_replies,
       waitRead: options && options.waitRead,
       waitDelivery: options && options.waitDelivery
     }
